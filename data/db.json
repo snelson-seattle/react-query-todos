@@ -20,21 +20,15 @@
     },
     {
       "userId": 1,
-      "id": 4,
-      "name": "Update Resume",
-      "completed": false
-    },
-    {
-      "userId": 1,
-      "id": 5,
-      "name": "Do the dishes",
-      "completed": false
-    },
-    {
-      "userId": 1,
       "name": "Take out the garbage",
       "completed": false,
       "id": 6
+    },
+    {
+      "userId": 1,
+      "name": "Finish developer portfolio",
+      "completed": false,
+      "id": 7
     }
   ]
 }
