@@ -13,7 +13,12 @@ const TodoList = () => {
     isError,
     error,
     data: todos,
-  } = useQuery("todos", getTodos);
+  } = useQuery("todos", getTodos, {
+    // The select will allow you to modify your data,
+    // This will sort the todos in reverse order (newest at the top)
+    select: data => data.sort((a,b) => b.id - a.id)
+    
+  });
 
   const addTodoMutation = useMutation(addTodo, {
     onSuccess: () => {
