@@ -29,6 +29,12 @@
       "id": 5,
       "name": "Do the dishes",
       "completed": false
+    },
+    {
+      "userId": 1,
+      "name": "Take out the garbage",
+      "completed": false,
+      "id": 6
     }
   ]
 }
