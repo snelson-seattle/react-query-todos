@@ -9,12 +9,7 @@ const TodoList = () => {
   const [newTodo, setNewTodo] = useState("");
   const queryClient = useQueryClient();
 
-  const {
-    isLoading,
-    isError,
-    error,
-    data,
-  } = useQuery("todos", getTodos, {
+  const { isLoading, isError, error, data } = useQuery("todos", getTodos, {
     // The select will allow you to modify your data,
     // This will sort the todos in reverse order (newest at the top)
     select: (data) => data.sort((a, b) => b.id - a.id),
@@ -26,23 +21,23 @@ const TodoList = () => {
     const arrayIdsOrder = JSON.parse(localStorage.getItem("taskOrder"));
 
     // If there is data, but no array of task ids in correct order
-    if(!arrayIdsOrder && data?.length) {
-      const idsOrderArray = data.map(item => item.id);
+    if (!arrayIdsOrder && data?.length) {
+      const idsOrderArray = data.map((item) => item.id);
       localStorage.setItem("taskOrder", JSON.stringify(idsOrderArray));
     }
 
     let myTaskArray;
-    if(arrayIdsOrder?.length && data?.length) {
+    if (arrayIdsOrder?.length && data?.length) {
       // map over data array and sort by correct position
-      myTaskArray = arrayIdsOrder.map(position => {
-        return data.find(item => item.id === position);
+      myTaskArray = arrayIdsOrder.map((position) => {
+        return data.find((item) => item.id === position);
       });
 
-      const newItems = data.filter(item => {
+      const newItems = data.filter((item) => {
         return !arrayIdsOrder.includes(item.id);
       });
 
-      if(newItems?.length) {
+      if (newItems?.length) {
         myTaskArray = [...newItems, ...myTaskArray];
       }
     }
@@ -82,18 +77,18 @@ const TodoList = () => {
   };
 
   const handleDelete = (id) => {
-    const arrayIdsOrder = JSON.parse(localStorage.getItem('taskOrder'))
+    const arrayIdsOrder = JSON.parse(localStorage.getItem("taskOrder"));
 
     if (arrayIdsOrder?.length) {
-        const newIdsOrderArray = arrayIdsOrder.filter(num => num !== id)
-        localStorage.setItem('taskOrder', JSON.stringify(newIdsOrderArray))
+      const newIdsOrderArray = arrayIdsOrder.filter((num) => num !== id);
+      localStorage.setItem("taskOrder", JSON.stringify(newIdsOrderArray));
     }
 
-    deleteTodoMutation.mutate({ id })
-}
+    deleteTodoMutation.mutate({ id });
+  };
 
   const handleDragEnd = (result) => {
-    if(!result) {
+    if (!result?.destination) {
       return;
     }
 
@@ -103,11 +98,11 @@ const TodoList = () => {
 
     tasks.splice(result.destination.index, 0, reorderedItem);
 
-    const idsOrderArray = tasks.map(task => task.id);
+    const idsOrderArray = tasks.map((task) => task.id);
     localStorage.setItem("taskOrder", JSON.stringify(idsOrderArray));
 
     setTodos(tasks);
-  }
+  };
 
   const newItemSection = (
     <form onSubmit={handleSubmit}>
@@ -133,48 +128,62 @@ const TodoList = () => {
   } else if (isError) {
     content = <p>{error.message}</p>;
   } else {
-    content =  content = (
+    content = content = (
       <DragDropContext onDragEnd={handleDragEnd}>
-          <Droppable droppableId="todos">
-              {(provided) => (
-                  <section {...provided.droppableProps} ref={provided.innerRef}>
-                      {todos.map((todo, index) => {
-                          return (
-                              <Draggable key={todo.id} draggableId={todo.id.toString()} index={index}>
-                                  {(provided) => (
-                                      <article {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
-                                          <div className="todo">
-                                              <input
-                                                  type="checkbox"
-                                                  checked={todo.completed}
-                                                  id={todo.id}
-                                                  onChange={() =>
-                                                      updateTodoMutation.mutate({ ...todo, completed: !todo.completed })
-                                                  }
-                                              />
-                                              <label htmlFor={todo.id}>{todo.name}</label>
-                                          </div>
-                                          <button className="trash" onClick={() => handleDelete(todo.id)}>
-                                              <FaTrash />
-                                          </button>
-                                      </article>
-                                  )}
-                              </Draggable>
-                          )
-                      })}
-                      {provided.placeholder}
-                  </section>
-              )}
-          </Droppable>
+        <Droppable droppableId="todos">
+          {(provided) => (
+            <section {...provided.droppableProps} ref={provided.innerRef}>
+              {todos.map((todo, index) => {
+                return (
+                  <Draggable
+                    key={todo.id}
+                    draggableId={todo.id.toString()}
+                    index={index}
+                  >
+                    {(provided) => (
+                      <article
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        ref={provided.innerRef}
+                      >
+                        <div className="todo">
+                          <input
+                            type="checkbox"
+                            checked={todo.completed}
+                            id={todo.id}
+                            onChange={() =>
+                              updateTodoMutation.mutate({
+                                ...todo,
+                                completed: !todo.completed,
+                              })
+                            }
+                          />
+                          <label htmlFor={todo.id}>{todo.name}</label>
+                        </div>
+                        <button
+                          className="trash"
+                          onClick={() => handleDelete(todo.id)}
+                        >
+                          <FaTrash />
+                        </button>
+                      </article>
+                    )}
+                  </Draggable>
+                );
+              })}
+              {provided.placeholder}
+            </section>
+          )}
+        </Droppable>
       </DragDropContext>
-  )
+    );
   }
 
   return (
     <main>
       <h1>Todo List</h1>
       {newItemSection}
-    {content}
+      {content}
     </main>
   );
 };
